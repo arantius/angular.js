@@ -39,11 +39,11 @@ function ResourceFactory(xhr) {
 }
 
 ResourceFactory.DEFAULT_ACTIONS = {
-  'get':    {method:'GET'},
-  'save':   {method:'POST'},
-  'query':  {method:'GET', isArray:true},
-  'remove': {method:'DELETE'},
-  'delete': {method:'DELETE'}
+  'get':    {method:'GET', mutate:true},
+  'save':   {method:'POST', mutate:false},
+  'query':  {method:'GET', isArray:true, mutate:true},
+  'remove': {method:'DELETE', mutate:false},
+  'delete': {method:'DELETE', mutate:false}
 };
 
 ResourceFactory.prototype = {
@@ -97,13 +97,15 @@ ResourceFactory.prototype = {
           data,
           function(status, response, clear) {
             if (status == 200) {
-              if (action.isArray) {
-                value.length = 0;
-                forEach(response, function(item){
-                  value.push(new Resource(item));
-                });
-              } else {
-                copy(response, value);
+              if (action.mutate) {
+                if (action.isArray) {
+                  value.length = 0;
+                  forEach(response, function(item){
+                    value.push(new Resource(item));
+                  });
+                } else {
+                  copy(response, value);
+                }
               }
               (callback||noop)(value);
             } else {
