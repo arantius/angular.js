@@ -499,8 +499,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng:change') || '',
-        lastValue;
+        action = element.attr('ng:change') || '';
     if (model) {
       initFn.call(scope, model, view, element);
       this.$eval(element.attr('ng:init')||'');
@@ -516,10 +515,8 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
         }
         event.type == 'keydown' ? $defer(handler) : handler();
       });
-      scope.$watch(model.get, function(value){
-        if (lastValue !== value) {
-          view.set(lastValue = value);
-        }
+      scope.$onEval(0, function() {
+        view.set(model.get());
       });
     }
   });
